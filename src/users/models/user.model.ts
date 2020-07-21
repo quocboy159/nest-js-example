@@ -2,10 +2,10 @@ import { Column, Model, Table } from 'sequelize-typescript';
 
 @Table
 export class User extends Model<User> {
-  @Column
+  @Column({allowNull: false})
   firstName: string;
 
-  @Column
+  @Column({allowNull: false})
   lastName: string;
 
   @Column({ defaultValue: true })
