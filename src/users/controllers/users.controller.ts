@@ -2,7 +2,7 @@ import { Controller, Body, Get, Post, HttpCode, Param, Delete, UsePipes } from '
 import { UsersService } from '../services/users.service';
 import { User } from '../models/user.model';
 import { CreateUserDto } from '../dtos/create-user.dto';
-import { CustomValidationPipe } from 'src/shared/pipes/custom-validation.pipe';
+import { CustomValidationPipe } from '../../shared/pipes/custom-validation.pipe';
 
 @Controller('api/users')
 export class UsersController {
