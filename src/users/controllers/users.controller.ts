@@ -18,7 +18,6 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @UsePipes(new CustomValidationPipe())
   @Post()
   @HttpCode(200)
   async create(@Body() createUserDto: CreateUserDto): Promise<number> {
