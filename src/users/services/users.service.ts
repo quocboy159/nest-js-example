@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../models/user.model';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import {Service} from "typedi";
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UsersService {
   constructor(@InjectModel(User) private readonly userModel: typeof User) {}
 
@@ -27,5 +28,13 @@ export class UsersService {
   async remove(id: number): Promise<void> {
     const user = await this.findOne(id);
     await user.destroy();
+  }
+
+  async findByUserName(userName: string): Promise<User> {
+    return this.userModel.findOne({
+      where: {
+        userName
+      },
+    });
   }
 }
