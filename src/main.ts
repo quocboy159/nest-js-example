@@ -3,11 +3,18 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { CustomValidationPipe } from './shared/pipes/custom-validation.pipe';
 import { ErrorsInterceptor } from './shared/interceptors/errors.interceptor';
+import * as helmet from 'helmet';
+import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {logger: true});
 
+  app.use(helmet());
+
+  app.enableCors();
+
   app.useGlobalPipes(new CustomValidationPipe());
+  app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalInterceptors(new ErrorsInterceptor());
 
   const options = new DocumentBuilder()
