@@ -1,25 +1,20 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from './users/models/user.model';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ErrorsInterceptor } from './shared/interceptors/errors.interceptor';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
+import { CommonModule } from './common/common.module';
+import { AuthModule } from './auth/auth.module';
+import { DatabaseModule } from './database/database.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    AuthModule,
     UsersModule,
-    SequelizeModule.forRoot({
-      dialect: 'postgres',
-      username: 'postgres',
-      password: 'Helloworld123',
-      database: 'Test',
-      port: 5432,
-      host: 'localhost',
-      autoLoadModels: true,
-      synchronize: true,
-      models: [User.name],
-    }),
+    CommonModule,
+    DatabaseModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [],
   providers: [

@@ -1,19 +1,39 @@
-import { Controller, Body, Get, Post, HttpCode, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Get,
+  Post,
+  HttpCode,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { User } from '../models/user.model';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { MyLogger } from '../../shared/services/my-logger.service';
+import { UserListItemDto } from '../dtos/user-list-item.dto';
+import { UserDto } from '../dtos/user.dto';
 
-@Controller('api/users')
+@UseGuards(AuthGuard('jwt'))
+@Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private myLogger: MyLogger,
+  ) {}
 
+  // @UseGuards(AuthGuard('jwt'))
   @Get()
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserListItemDto[]> {
+    this.myLogger.log('Call findAll Action');
     return this.usersService.findAll();
   }
 
+  // @UseGuards(AuthGuard('jwt'))
   @Get(':id')
-  findOne(@Param('id') id: number): Promise<User> {
+  findOne(@Param('id') id: number): Promise<UserDto> {
     return this.usersService.findOne(id);
   }
 
@@ -26,6 +46,6 @@ export class UsersController {
   @Delete(':id')
   @HttpCode(200)
   async remove(@Param('id') id: number): Promise<void> {
-     this.usersService.remove(id);
+    this.usersService.remove(id);
   }
 }

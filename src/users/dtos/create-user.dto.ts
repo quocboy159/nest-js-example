@@ -1,6 +1,5 @@
-import { IsNotEmpty, MaxLength, NotContains } from 'class-validator';
-import { IsUserAlreadyExist } from '../validators/is-user-already-exist.validator';
-import { property } from 'lodash';
+import { IsNotEmpty, MaxLength, NotContains, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -10,6 +9,7 @@ export class CreateUserDto {
   })
   public firstName: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @MaxLength(255, {
     message:
@@ -17,6 +17,7 @@ export class CreateUserDto {
   })
   public lastName: string;
 
+  @ApiProperty()
   @NotContains(' ')
   @IsNotEmpty()
   @MaxLength(20, {
@@ -24,4 +25,16 @@ export class CreateUserDto {
       'FirstName is too long. Maximal length is $constraint1 characters, but actual is $value',
   })
   public userName: string;
+
+  @ApiProperty()
+  @NotContains(' ')
+  @IsNotEmpty()
+  @MinLength(6, {
+    message:
+      'FirstName is too short. Min length is $constraint1 characters, but actual is $value',
+  })
+  public password: string;
+
+  @ApiProperty()
+  public isActive: boolean;
 }
