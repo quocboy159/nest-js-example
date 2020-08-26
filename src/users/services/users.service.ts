@@ -4,10 +4,9 @@ import { User } from '../models/user.model';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UserListItemDto } from '../dtos/user-list-item.dto';
 import { UserDto } from '../dtos/user.dto';
-import { UserSkill } from '../models/user-skill.model';
 import { Skill } from '../models/skill.model';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable({ scope: Scope.TRANSIENT })
 export class UsersService {
   constructor(@InjectModel(User) private readonly userModel: typeof User) {}
 
@@ -15,6 +14,16 @@ export class UsersService {
     return this.userModel.findAll({
       attributes: { include: ['firstName', 'lastName'] },
     });
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const data = await this.userModel.findOne({
+      where: {
+        email,
+      },
+    });
+
+    return data;
   }
 
   async findOne(id: number): Promise<UserDto> {
@@ -28,7 +37,8 @@ export class UsersService {
     const response: UserDto = new UserDto();
     response.firstName = data.firstName;
     response.lastName = data.lastName;
-    response.userName = data.userName;
+    response.email = data.email;
+    response.provider = data.provider;
     response.isActive = data.isActive;
     response.skills = data.skills.map(x => x.name);
     return response;

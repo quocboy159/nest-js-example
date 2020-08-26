@@ -4,9 +4,11 @@ import {
   Table,
   Length,
   BelongsToMany,
+  IsEmail,
 } from 'sequelize-typescript';
 import { UserSkill } from './user-skill.model';
 import { Skill } from './skill.model';
+import { Provider } from '../../auth/enums/providers.enum';
 
 @Table
 export class User extends Model<User> {
@@ -16,13 +18,12 @@ export class User extends Model<User> {
   @Column({ allowNull: false })
   lastName: string;
 
-  @Length({ max: 20 })
+  @IsEmail
   @Column({ allowNull: false, unique: true })
-  userName: string;
+  email: string;
 
-  @Length({ min: 6 })
   @Column({ allowNull: false })
-  password: string;
+  provider: Provider;
 
   @Column({ defaultValue: true })
   isActive: boolean;

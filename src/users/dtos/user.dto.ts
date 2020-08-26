@@ -5,7 +5,9 @@ export class UserDto {
 
   public lastName: string;
 
-  public userName: string;
+  public email: string;
+
+  public provider: string;
 
   public isActive: boolean;
 

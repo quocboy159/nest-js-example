@@ -1,29 +1,43 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Scope,
+  Inject,
+} from '@nestjs/common';
 
 import { sign } from 'jsonwebtoken';
-import { Provider } from './enums/providers.enum';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from '../users/services/users.service';
+import { CreateUserDto } from '../users/dtos/create-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly configService: ConfigService /*private readonly usersService: UsersService*/,
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
   ) {}
 
-  async validateOAuthLogin(
-    thirdPartyId: string,
-    provider: Provider,
-  ): Promise<string> {
+  async validateOAuthLogin(profile: any, provider: string): Promise<string> {
     try {
       // You can add some registration logic here,
       // to register the user using their thirdPartyId (in this case their googleId)
-      // let user: IUser = await this.usersService.findOneByThirdPartyId(thirdPartyId, provider);
+      const email = profile.emails[0].value;
+      const verified = profile.emails[0].verified;
+      const user = await this.usersService.findOneByEmail(email);
 
-      // if (!user)
-      // user = await this.usersService.registerOAuthUser(thirdPartyId, provider);
+      if (!user) {
+        const createUserDto = new CreateUserDto();
+        createUserDto.email = email;
+        createUserDto.firstName = profile.name.familyName;
+        createUserDto.lastName = profile.name.givenName;
+        createUserDto.isActive = verified;
+        createUserDto.provider = provider;
+        await this.usersService.create(createUserDto);
+      }
 
       const payload = {
-        thirdPartyId,
+        id: profile.id,
+        email,
         provider,
       };
 

@@ -12,6 +12,7 @@ import { SkillsController } from './controllers/skills.controller';
 
 @Module({
   imports: [SequelizeModule.forFeature([User, Skill, UserSkill]), LoggerModule],
+  exports: [UsersService],
   controllers: [UsersController, SkillsController],
   providers: [UsersService, SkillsService, IsUserAlreadyExistConstraint],
 })

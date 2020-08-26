@@ -1,4 +1,4 @@
-import { IsNotEmpty, MaxLength, NotContains, MinLength } from 'class-validator';
+import { IsNotEmpty, MaxLength, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -18,22 +18,13 @@ export class CreateUserDto {
   public lastName: string;
 
   @ApiProperty()
-  @NotContains(' ')
   @IsNotEmpty()
-  @MaxLength(20, {
-    message:
-      'FirstName is too long. Maximal length is $constraint1 characters, but actual is $value',
-  })
-  public userName: string;
+  @IsEmail()
+  public email: string;
 
   @ApiProperty()
-  @NotContains(' ')
   @IsNotEmpty()
-  @MinLength(6, {
-    message:
-      'FirstName is too short. Min length is $constraint1 characters, but actual is $value',
-  })
-  public password: string;
+  public provider: string;
 
   @ApiProperty()
   public isActive: boolean;
