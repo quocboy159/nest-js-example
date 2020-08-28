@@ -32,13 +32,15 @@ export class AuthService {
         createUserDto.lastName = profile.name.givenName;
         createUserDto.isActive = verified;
         createUserDto.provider = provider;
-        await this.usersService.create(createUserDto);
+        user.id = await this.usersService.create(createUserDto);
       }
 
       const payload = {
-        id: profile.id,
+        id: user.id,
         email,
         provider,
+        firstName: profile.name.familyName,
+        lastName: profile.name.givenName,
       };
 
       const jwt: string = sign(

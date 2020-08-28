@@ -32,8 +32,8 @@ export class SkillsService {
   }
 
   async create(model: CreateSkillDto): Promise<number> {
-    const skill = await this.skillModel.create(model);
-    return skill.id;
+    const data = await this.skillModel.create(model);
+    return data.id;
   }
 
   async edit(model: EditSkillDto): Promise<void> {
