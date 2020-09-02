@@ -5,10 +5,22 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { UserListItemDto } from '../dtos/user-list-item.dto';
 import { UserDto } from '../dtos/user.dto';
 import { Skill } from '../models/skill.model';
+import { UserTypes } from '../enums/user-type.enum';
+import { UserSkillDto } from '../dtos/user-skill.dto';
+import { UserSkill } from '../models/user-skill.model';
+import EnumHepler from '../../shared/helpers/enum.helper';
+import { SkillLevelLabels, SkillLevel } from '../enums/skill-level.enum';
+import { SkillTypeLabels } from '../enums/skill-type.enum';
+import { UpdateUserSkillDto } from '../dtos/update-user-skill.dto';
+import { SkillExperirenceLabels } from '../enums/skill-experience.enum';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class UsersService {
-  constructor(@InjectModel(User) private readonly userModel: typeof User) {}
+  constructor(
+    @InjectModel(User) private readonly userModel: typeof User,
+    @InjectModel(Skill) private readonly skillModel: typeof Skill,
+    @InjectModel(UserSkill) private readonly userSkillModel: typeof UserSkill,
+  ) {}
 
   async findAll(): Promise<UserListItemDto[]> {
     return this.userModel.findAll({
@@ -45,7 +57,8 @@ export class UsersService {
   }
 
   async create(userDto: CreateUserDto): Promise<number> {
-    const user = await this.userModel.create(userDto);
+    const createdUser = { ...userDto, type: UserTypes.Normal };
+    const user = await this.userModel.create(createdUser);
     return user.id;
   }
 
@@ -59,6 +72,75 @@ export class UsersService {
       where: {
         userName,
       },
+    });
+  }
+
+  public async getSkillsByUserName(userId: number): Promise<UserSkillDto[]> {
+    // const user = await this.findByUserName(userName);
+    const skills = await this.skillModel.findAll();
+    const userSkills = await this.userSkillModel.findAll({
+      where: {
+        userId: userId,
+      },
+    });
+    const result = skills.map(x => {
+      const userSkill = userSkills.find(c => c.skillId == x.id);
+      const data: UserSkillDto = {
+        note: userSkill?.note || undefined,
+        level: userSkill?.level,
+        levelText:
+          userSkill?.level !== undefined && userSkill?.level !== null
+            ? EnumHepler.convertEnumToLabel(
+                SkillLevelLabels,
+                Number(userSkill.level),
+              )
+            : '',
+        skillId: x.id,
+        skillName: x.name,
+        type: Number(x.type),
+        typeText: EnumHepler.convertEnumToLabel(
+          SkillTypeLabels,
+          Number(x.type),
+        ),
+        userId: userId,
+        yearOfExperiences: userSkill?.yearOfExperiences,
+        yearOfExperiencesText:
+          userSkill?.yearOfExperiences !== undefined &&
+          userSkill?.yearOfExperiences !== null
+            ? EnumHepler.convertEnumToLabel(
+                SkillExperirenceLabels,
+                Number(userSkill.yearOfExperiences),
+              )
+            : '',
+      };
+
+      return data;
+    });
+
+    return result;
+  }
+
+  async updateUserSkill(userSkillDto: UpdateUserSkillDto): Promise<void> {
+    const userSkillModel = await this.userSkillModel.findOne({
+      where: { userId: userSkillDto.userId, skillId: userSkillDto.skillId },
+    });
+
+    if (userSkillModel) {
+      await userSkillModel.update(userSkillDto);
+    } else {
+      await this.userSkillModel.create(userSkillDto);
+    }
+  }
+
+  async removeSkill(userId: number, skillId: number): Promise<void> {
+    await this.userSkillModel.destroy({
+      where: { userId: userId, skillId: skillId },
+    });
+  }
+
+  async removeAllSkillByUserId(userId: number): Promise<void> {
+    await this.userSkillModel.destroy({
+      where: { userId: userId },
     });
   }
 

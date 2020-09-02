@@ -24,6 +24,7 @@ export class AuthService {
       const email = profile.emails[0].value;
       const verified = profile.emails[0].verified;
       const user = await this.usersService.findOneByEmail(email);
+      let id: number = user.id || 0;
 
       if (!user) {
         const createUserDto = new CreateUserDto();
@@ -32,11 +33,12 @@ export class AuthService {
         createUserDto.lastName = profile.name.givenName;
         createUserDto.isActive = verified;
         createUserDto.provider = provider;
-        user.id = await this.usersService.create(createUserDto);
+
+        id = await this.usersService.create(createUserDto);
       }
 
       const payload = {
-        id: user.id,
+        id,
         email,
         provider,
         firstName: profile.name.familyName,

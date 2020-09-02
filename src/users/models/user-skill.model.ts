@@ -9,6 +9,8 @@ import {
 } from 'sequelize-typescript';
 import { User } from './user.model';
 import { Skill } from './skill.model';
+import { SkillLevel } from '../enums/skill-level.enum';
+import { SkillExperirence } from '../enums/skill-experience.enum';
 
 @Table
 export class UserSkill extends Model<UserSkill> {
@@ -29,5 +31,11 @@ export class UserSkill extends Model<UserSkill> {
   skillId: number;
 
   @Column
-  yearOfExperiences?: number;
+  yearOfExperiences?: SkillExperirence;
+
+  @Column
+  level?: SkillLevel;
+
+  @Column
+  note: string | undefined;
 }

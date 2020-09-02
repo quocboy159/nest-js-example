@@ -5,6 +5,7 @@ import { RoleLabels } from '../../users/enums/roles.enum';
 import { SkillLevelLabels } from '../../users/enums/skill-level.enum';
 import { SkillTypeLabels } from '../../users/enums/skill-type.enum';
 import { AuthGuard } from '@nestjs/passport';
+import { SkillExperirenceLabels } from '../../users/enums/skill-experience.enum';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('common')
@@ -22,5 +23,10 @@ export class CommonController {
   @Get('skill-types')
   async GetSkillTypes(): Promise<EnumModel[]> {
     return EnumHepler.getEnumList(SkillTypeLabels);
+  }
+
+  @Get('skill-experiences')
+  async GetSkillExperiences(): Promise<EnumModel[]> {
+    return EnumHepler.getEnumList(SkillExperirenceLabels);
   }
 }

@@ -37,7 +37,7 @@ export class SkillsService {
   }
 
   async edit(model: EditSkillDto): Promise<void> {
-    await this.skillModel.update(model, { where: { id: 1 } });
+    await this.skillModel.update(model, { where: { id: model.id } });
   }
 
   async remove(id: number): Promise<void> {
