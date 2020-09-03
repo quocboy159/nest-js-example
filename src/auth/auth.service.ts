@@ -9,6 +9,9 @@ import { sign } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/services/users.service';
 import { CreateUserDto } from '../users/dtos/create-user.dto';
+import { User } from '../users/models/user.model';
+import EnumHepler from '../shared/helpers/enum.helper';
+import { UserPermissionRoleLabels } from '../users/enums/user-permission-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -23,8 +26,7 @@ export class AuthService {
       // to register the user using their thirdPartyId (in this case their googleId)
       const email = profile.emails[0].value;
       const verified = profile.emails[0].verified;
-      const user = await this.usersService.findOneByEmail(email);
-      let id: number = user.id || 0;
+      var user: User = await this.usersService.findOneByEmail(email);
 
       if (!user) {
         const createUserDto = new CreateUserDto();
@@ -34,11 +36,17 @@ export class AuthService {
         createUserDto.isActive = verified;
         createUserDto.provider = provider;
 
-        id = await this.usersService.create(createUserDto);
+        await this.usersService.create(createUserDto);
+
+        user = await this.usersService.findOneByEmail(email);
       }
 
       const payload = {
-        id,
+        id: user.id,
+        role: EnumHepler.convertEnumToLabel(
+          UserPermissionRoleLabels,
+          Number(user.role),
+        ),
         email,
         provider,
         firstName: profile.name.familyName,

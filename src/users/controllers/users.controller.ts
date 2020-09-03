@@ -32,11 +32,19 @@ export class UsersController {
   ) {}
 
   @Get('/skills')
-  async getSkillsByUserName(): Promise<UserSkillDto[]> {
+  async getSkillsByCurentUser(): Promise<UserSkillDto[]> {
     this.request;
-    const data = await this.usersService.getSkillsByUserName(
+    const data = await this.usersService.getSkillsByUserId(
       this.request.user.id,
     );
+
+    return data;
+  }
+
+  @Get(':id/skills')
+  async getSkillsByUserId(@Param('id') id: number): Promise<UserSkillDto[]> {
+    this.request;
+    const data = await this.usersService.getSkillsByUserId(id);
 
     return data;
   }

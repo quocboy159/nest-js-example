@@ -8,7 +8,7 @@ import {
 import { UserSkill } from './user-skill.model';
 import { Skill } from './skill.model';
 import { Provider } from '../../auth/enums/providers.enum';
-import { UserTypes } from '../enums/user-type.enum';
+import { UserPermissionRole } from '../enums/user-permission-role.enum';
 
 @Table
 export class User extends Model<User> {
@@ -26,7 +26,7 @@ export class User extends Model<User> {
   provider: Provider;
 
   @Column({ allowNull: false })
-  type: UserTypes;
+  role: UserPermissionRole;
 
   @Column({ defaultValue: true })
   isActive: boolean;

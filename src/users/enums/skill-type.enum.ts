@@ -11,6 +11,7 @@ export const SkillTypeLabels = new Map<number, string>([
   [SkillType.BA, 'BA Skills'],
   [SkillType.DEV, 'DEV Skills'],
   [SkillType.TESTING, 'Testing Skills'],
+  [SkillType.PM, 'PM Skills'],
   [SkillType.DESGIN, 'Design Skills'],
   [SkillType.GENERAL, 'General Skills'],
 ]);

@@ -5,7 +5,6 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { UserListItemDto } from '../dtos/user-list-item.dto';
 import { UserDto } from '../dtos/user.dto';
 import { Skill } from '../models/skill.model';
-import { UserTypes } from '../enums/user-type.enum';
 import { UserSkillDto } from '../dtos/user-skill.dto';
 import { UserSkill } from '../models/user-skill.model';
 import EnumHepler from '../../shared/helpers/enum.helper';
@@ -13,6 +12,7 @@ import { SkillLevelLabels, SkillLevel } from '../enums/skill-level.enum';
 import { SkillTypeLabels } from '../enums/skill-type.enum';
 import { UpdateUserSkillDto } from '../dtos/update-user-skill.dto';
 import { SkillExperirenceLabels } from '../enums/skill-experience.enum';
+import { UserPermissionRole } from '../enums/user-permission-role.enum';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class UsersService {
@@ -57,7 +57,7 @@ export class UsersService {
   }
 
   async create(userDto: CreateUserDto): Promise<number> {
-    const createdUser = { ...userDto, type: UserTypes.Normal };
+    const createdUser = { ...userDto, role: UserPermissionRole.Normal };
     const user = await this.userModel.create(createdUser);
     return user.id;
   }
@@ -67,15 +67,7 @@ export class UsersService {
     await user.destroy();
   }
 
-  async findByUserName(userName: string): Promise<User> {
-    return this.userModel.findOne({
-      where: {
-        userName,
-      },
-    });
-  }
-
-  public async getSkillsByUserName(userId: number): Promise<UserSkillDto[]> {
+  public async getSkillsByUserId(userId: number): Promise<UserSkillDto[]> {
     // const user = await this.findByUserName(userName);
     const skills = await this.skillModel.findAll();
     const userSkills = await this.userSkillModel.findAll({
