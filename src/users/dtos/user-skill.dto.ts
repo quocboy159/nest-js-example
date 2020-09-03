@@ -31,4 +31,7 @@ export class UserSkillDto {
 
   @ApiProperty()
   public levelText: string;
+
+  @ApiProperty()
+  public isNew: boolean;
 }

@@ -13,6 +13,7 @@ import { SkillTypeLabels } from '../enums/skill-type.enum';
 import { UpdateUserSkillDto } from '../dtos/update-user-skill.dto';
 import { SkillExperirenceLabels } from '../enums/skill-experience.enum';
 import { UserPermissionRole } from '../enums/user-permission-role.enum';
+import { DATE } from 'sequelize';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class UsersService {
@@ -68,7 +69,6 @@ export class UsersService {
   }
 
   public async getSkillsByUserId(userId: number): Promise<UserSkillDto[]> {
-    // const user = await this.findByUserName(userName);
     const skills = await this.skillModel.findAll();
     const userSkills = await this.userSkillModel.findAll({
       where: {
@@ -77,9 +77,11 @@ export class UsersService {
     });
     const result = skills.map(x => {
       const userSkill = userSkills.find(c => c.skillId == x.id);
+      const dateNow: Date | any = new Date();
+      const diffDay = (dateNow - x.createdAt) / (1000 * 60 * 60 * 24);
       const data: UserSkillDto = {
         note: userSkill?.note || undefined,
-        level: userSkill?.level,
+        level: userSkill?.level || undefined,
         levelText:
           userSkill?.level !== undefined && userSkill?.level !== null
             ? EnumHepler.convertEnumToLabel(
@@ -95,7 +97,7 @@ export class UsersService {
           Number(x.type),
         ),
         userId: userId,
-        yearOfExperiences: userSkill?.yearOfExperiences,
+        yearOfExperiences: userSkill?.yearOfExperiences || undefined,
         yearOfExperiencesText:
           userSkill?.yearOfExperiences !== undefined &&
           userSkill?.yearOfExperiences !== null
@@ -104,6 +106,7 @@ export class UsersService {
                 Number(userSkill.yearOfExperiences),
               )
             : '',
+        isNew: diffDay <= 3,
       };
 
       return data;
