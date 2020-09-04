@@ -12,8 +12,10 @@ import { SkillLevelLabels, SkillLevel } from '../enums/skill-level.enum';
 import { SkillTypeLabels } from '../enums/skill-type.enum';
 import { UpdateUserSkillDto } from '../dtos/update-user-skill.dto';
 import { SkillExperirenceLabels } from '../enums/skill-experience.enum';
-import { UserPermissionRole } from '../enums/user-permission-role.enum';
-import { DATE } from 'sequelize';
+import {
+  UserPermissionRole,
+  UserPermissionRoleLabels,
+} from '../enums/user-permission-role.enum';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class UsersService {
@@ -24,8 +26,21 @@ export class UsersService {
   ) {}
 
   async findAll(): Promise<UserListItemDto[]> {
-    return this.userModel.findAll({
-      attributes: { include: ['firstName', 'lastName'] },
+    const users = await this.userModel.findAll();
+    return users.map(x => {
+      const user: UserListItemDto = {
+        id: x.id,
+        email: x.email,
+        firstName: x.firstName,
+        lastName: x.lastName,
+        isActive: x.isActive,
+        role: EnumHepler.convertEnumToLabel(
+          UserPermissionRoleLabels,
+          Number(x.role),
+        ),
+      };
+
+      return user;
     });
   }
 
@@ -58,7 +73,7 @@ export class UsersService {
   }
 
   async create(userDto: CreateUserDto): Promise<number> {
-    const createdUser = { ...userDto, role: UserPermissionRole.Normal };
+    const createdUser = { ...userDto, role: UserPermissionRole.Employee };
     const user = await this.userModel.create(createdUser);
     return user.id;
   }
@@ -81,7 +96,7 @@ export class UsersService {
       const diffDay = (dateNow - x.createdAt) / (1000 * 60 * 60 * 24);
       const data: UserSkillDto = {
         note: userSkill?.note || undefined,
-        level: userSkill?.level || undefined,
+        level: userSkill?.level,
         levelText:
           userSkill?.level !== undefined && userSkill?.level !== null
             ? EnumHepler.convertEnumToLabel(
@@ -97,7 +112,7 @@ export class UsersService {
           Number(x.type),
         ),
         userId: userId,
-        yearOfExperiences: userSkill?.yearOfExperiences || undefined,
+        yearOfExperiences: userSkill?.yearOfExperiences,
         yearOfExperiencesText:
           userSkill?.yearOfExperiences !== undefined &&
           userSkill?.yearOfExperiences !== null
